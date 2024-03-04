@@ -2,6 +2,11 @@
 
 Pipeline to ingest data from a MSSQL source, land it in Google Cloud Storage, then finally BigQuery. 
 
+## Features
+
+- Incremental Load
+- Automatic conversion of data types
+
 ## Getting Started
 
 ### Dependencies
@@ -50,3 +55,32 @@ Optional
 - `last_val_default` - fallback value to be used if table does not already exist in destination
 - `incremental_keys` - list of columns to match when comparing staging to existing records
   
+## Process
+
+### Initialize MSSQL Connection
+
+- Based on the environment variables provided, a pyodbc connection will be established
+- Auth will be using a trusted connection if either user or password variables are missing.
+
+### Check Last Value
+
+- If the ingestion_type is `append` or `incremental` - this step will be executed
+- This function identifies the maximum value (string, numeric, date, etc.) in the `last_val_column`
+- When the query to extract data from MSSQL is built, it will only be pulling records with a value greater than this
+- Custom queries can be used via the `last_val_query`
+
+### Build MSSQL Query
+
+
+
+### Build Schema JSON
+
+### Get Data
+
+### Load Data to GCS
+
+### Load GCS to BQ
+
+### Incremental Load
+
+### Check Index (Keys)
