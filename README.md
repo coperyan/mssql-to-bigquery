@@ -33,9 +33,9 @@ For each extract, you must define some parameters passed to the `MSSQLtoBigQuery
 
 Required
 - `ingestion_type`
-  - full_replace
-  - append - use a column (UUID or created date) to only ingest new records
-  - incremental - similar to append, will ingest new AND records that have changed
+  - `full_replace`
+  - `append` - use a column (UUID or created date) to only ingest new records
+  - `incremental` - similar to append, will ingest new AND records that have changed
 - `database`
 - `schema`
 - `mssql_object_name` - view or table you want to process
