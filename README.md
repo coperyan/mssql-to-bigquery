@@ -69,8 +69,36 @@ Optional
 - When the query to extract data from MSSQL is built, it will only be pulling records with a value greater than this
 - Custom queries can be used via the `last_val_query`
 
+```sql
+SELECT MAX({self.check_column}) AS `last_val` 
+FROM `{self.gcp_project}.{self.gcp_dataset}.{self.bq_table_name}`
+;
+```
+```bash
+Out[1]: '2024-02-01'
+```
+
+## Get MSSQL Schema
+
+- Collects a list of the fields for the table being queried
+- Applies BigQuery naming conventions, best practices to field names
+- Returns the BigQuery equivalent data type based on the MSSQL type
+
 ### Build MSSQL Query
 
+- Builds the query string for the extract
+- If no custom query is provided, the MSSQL schema is used to generate one
+- If `last_val_column` is used, it will also add a WHERE clause to limit the extract:
+
+```sql
+SELECT
+  field_1,
+  field_2,
+  field_3
+FROM {database}.{schema}.{mssql_object_name} (NOLOCK)
+WHERE {check_column} > {last_val}
+;
+```
 
 
 ### Build Schema JSON
