@@ -1,0 +1,8 @@
+gcp_project: "test-project"
+gcp_dataset: "test_data"
+gcs_bucket: "test_bucket"
+gcs_prefix: "root/ingestion"
+mssql_hostname: "mydb.sqlserver"
+mssql_username: "admin"
+mssql_password: "password"
+mssql_port: "0"

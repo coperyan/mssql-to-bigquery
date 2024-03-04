@@ -5,7 +5,7 @@ INGESTION_TYPES = {
         "incremental": False,
         "last_val": True,
         "source_format": bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-        "write_type": bigquery.WriteDisposition.APPEND,
+        "write_type": bigquery.WriteDisposition.WRITE_APPEND,
     },
     "full_replace": {
         "incremental": False,

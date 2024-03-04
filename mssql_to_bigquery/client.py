@@ -184,41 +184,41 @@ class MSSQLtoBigQuery:
                 gcp_dataset=self.gcp_dataset,
             )
         else:
-            result = (
-                self.bq_client.query(
-                    read_file(
-                        f"sql/bigquery/check_data_type.sql",
-                        gcp_project=self.gcp_project,
-                        gcp_dataset=self.gcp_dataset,
-                        table_name=self.bq_table_name,
-                        field_name=self.check_column,
-                    )
+            query_job = self.bq_client.query(
+                read_file(
+                    f"sql/bigquery/check_data_type.sql",
+                    gcp_project=self.gcp_project,
+                    gcp_dataset=self.gcp_dataset,
+                    table_name=self.bq_table_name,
+                    field_name=self.check_column,
                 )
-                .to_dataframe()
-                .iloc[0][0]
             )
-            if result in ["DATE", "DATETIME", "TIME", "TIMESTAMP"]:
+            result = query_job.result()
+            data_type = next(result).data_type
+            if data_type in ["DATE", "DATETIME", "TIME", "TIMESTAMP"]:
                 query_str = (
                     f"SELECT\n"
-                    f"""MAX(FORMAT_TIMESTAMP("%F %H:%M:%E3S",{self.check_column}))"""
+                    f"""MAX(FORMAT_TIMESTAMP("%F %H:%M:%E3S",{self.check_column})) AS `last_val`"""
                     f"FROM `{self.gcp_project}.{self.gcp_dataset}.{self.bq_table_name}`;"
                 )
             else:
                 query_str = (
-                    f"SELECT\n MAX({self.check_column})"
+                    f"SELECT MAX({self.check_column}) AS `last_val`"
                     f"FROM `{self.gcp_project}.{self.gcp_dataset}.{self.bq_table_name}`;"
                 )
         try:
             logging.info(f"Running last val query: {query_str}")
-            result = self.bq_client.query(query_str).to_dataframe().iloc[0][0]
-            logging.info(f"Last Val: {result}")
+            query_job = self.bq_client.query(query_str)
+            result = query_job.result()
+            last_val = next(result.last_val)
+            logging.info(f"Last Val: {last_val}")
         except NotFound as error:
             logging.warning(f"Error getting last value: {error}")
             if self.default_last_val:
-                result = self.default_last_val
-                logging.info(f"Using default last val: {result}")
+                last_val = self.default_last_val
+                logging.info(f"Using default last val: {last_val}")
 
-        return result
+        return last_val
 
     def _get_query_str(self) -> str:
         """Get (or build) SQL Query string
